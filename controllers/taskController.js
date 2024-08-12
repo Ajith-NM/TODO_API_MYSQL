@@ -2,11 +2,11 @@ import { Tasks } from "../models/taskmodel.js";
 import { CreateATask, DeleteTask, GetAllTasks, UpdateTaskStatus } from "../services/taskService.js";
 
 
-
+// @  get all tasks
+// @ /task/home
 export const  getHome= async(req,res)=>{
     try {
 
-        // console.log("user=", req.userId);
         let response
         const allTasks = await GetAllTasks(req.userId).then((data) => {
             return data
@@ -16,8 +16,7 @@ export const  getHome= async(req,res)=>{
            
                 response= "please create a new task"
         } else {
-          //  console.log("ghtfd=",allTasks);
-            
+         
             response=allTasks
         }
         res.status(200).json({ tasks: response })
@@ -27,6 +26,8 @@ export const  getHome= async(req,res)=>{
     }
 }
 
+// @  create a new task
+// @ /task/create
 export const postCreate = async (req, res) => {
     try {
         const { title, description } = req.body
@@ -53,6 +54,8 @@ export const postCreate = async (req, res) => {
     }
 }
 
+// @  gupdate status of the task
+// @ /task/statusUpdate
 export const statusUpdate = async (req, res) => {
     try {
         const status = req.body.status
@@ -80,6 +83,8 @@ export const statusUpdate = async (req, res) => {
     }
 }
 
+// @  delete the completed task
+// @ /task/deleteTask
 export const deleteATask = async (req, res) => {
     try {
         const id = req.query.id

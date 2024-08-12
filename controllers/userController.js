@@ -155,7 +155,7 @@ export const forgetPassword = async (req, res) => {
 }
 
 // @  resetting password 
-// @ /user/forgetPassword
+// @ /user/resetPassword
 export const resetPassword=async(req,res)=>{
     try {
         
