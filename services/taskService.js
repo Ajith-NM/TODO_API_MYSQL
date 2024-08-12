@@ -7,10 +7,10 @@ export const GetAllTasks = async (id) => {
 
     return new Promise((resolve, reject) => {
         Tasks.findAll({ where: { user_Id: id } }).then((data) => {
-           //  console.log("usertasks=",data);
+            //  console.log("usertasks=",data);
             resolve(data)
         }).catch((err) => {
-           // console.log("finderror=", err);
+            // console.log("finderror=", err);
             reject("failed")
         })
     })
@@ -19,13 +19,13 @@ export const GetAllTasks = async (id) => {
 
 //ceate a new task
 
-export const CreateATask = async (title,desc,status,id) => {
+export const CreateATask = async (title, desc, status, id) => {
     return new Promise((resolve, reject) => {
-        Tasks.create({title:title,description:desc,status:status,user_Id:id}).then((data) => {
+        Tasks.create({ title: title, description: desc, status: status, user_Id: id }).then((data) => {
             //console.log("new task=", data);
             resolve("inserted")
         }).catch((err) => {
-          //  console.log("finderror=", err);
+            //  console.log("finderror=", err);
             reject("failed")
         })
     })
@@ -35,17 +35,17 @@ export const CreateATask = async (title,desc,status,id) => {
 
 //update task status
 
-export const UpdateTaskStatus= async (status,id,user_Id) => {
+export const UpdateTaskStatus = async (status, id, user_Id) => {
 
     return new Promise((resolve, reject) => {
-        Tasks.update({status:status }, { where: { task_Id:id,user_Id:user_Id} }).then((data) => {
+        Tasks.update({ status: status }, { where: { task_Id: id, user_Id: user_Id } }).then((data) => {
             console.log("upadted data=", data);
-             if (data[0]) {
+            if (data[0]) {
                 resolve("updated")
-             } else {
+            } else {
                 resolve("failed")
-             }
-            
+            }
+
         }).catch((err) => {
             reject("failed")
         })
@@ -54,19 +54,19 @@ export const UpdateTaskStatus= async (status,id,user_Id) => {
 }
 //delete unwanted tasks
 
-export const DeleteTask=async(id,user_Id)=>{
+export const DeleteTask = async (id, user_Id) => {
     return new Promise((resolve, reject) => {
-        Tasks.destroy({ where: { task_Id:id,user_Id:user_Id} }).then((data) => {
+        Tasks.destroy({ where: { task_Id: id, user_Id: user_Id } }).then((data) => {
             console.log("delete data=", data);
             if (data) {
                 resolve("deleted")
             } else {
                 resolve("failed")
             }
-           
+
         }).catch((err) => {
             reject("failed")
         })
     })
-   
+
 }
