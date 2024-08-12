@@ -18,7 +18,7 @@ export const postSignup = async (req, res) => {
         const saltRounds = 10;
         let { password, username, email } = req.body;
         let previousUser = await CheckUser(email)
-       // console.log("users=", previousUser);
+        // console.log("users=", previousUser);
         if (previousUser === null) {
 
             bcrypt.hash(password, saltRounds, async (err, hash) => {
@@ -35,18 +35,23 @@ export const postSignup = async (req, res) => {
                             console.log(error);
                         });
                     let otp = GeneratePassword()
-                 //   console.log("uploadResult=",uploadResult);
+                    //   console.log("uploadResult=",uploadResult);
                     let user = await InsertUser(username, hash, email, uploadResult.secure_url, otp).then((data) => {
                         return data
                     }).catch((err) => {
                         console.log("error=", err);
                     })
-                  //  console.log("new user=", user);
+                    //  console.log("new user=", user);
+                    if (user != "failed") {
+                        await SendMail(email, "email verification", otp)
+                        res.status(200).cookie("email", email).json({ user: user });
+                        return
+                    }
+                    else {
+                        res.status(500).send("failed to create user")
+                        return
+                    }
 
-                    user != "failed" ? SendMail(email, "email verification", otp) : console.log("insertion failed");
-
-                    res.status(200).cookie("email", email).json({ user: user });
-                    return
                 }
 
             })
@@ -54,7 +59,7 @@ export const postSignup = async (req, res) => {
 
         }
         else {
-            res.send("failed to create user/USER already exist")
+            res.send("USER already exist")
             return
         }
     } catch (error) {
@@ -79,10 +84,10 @@ export const emailValidation = async (req, res) => {
         }).catch((err) => {
             console.log("verification err=", err);
         })
-        console.log(enterdOTP,"==",originalOTP);
+        console.log(enterdOTP, "==", originalOTP);
 
         if (enterdOTP === originalOTP) {
-           await UpdateOTP(req.cookies.email,null)
+            await UpdateOTP(req.cookies.email, null)
             res.status(200).json({ result: "email verified successfully" })
             return
 
@@ -112,18 +117,18 @@ export const postLogin = async (req, res) => {
             bcrypt.compare(password, user.dataValues.password, (err, result) => {
                 if (result) {
                     let token = jwt.sign(user.dataValues, process.env.secret, { expiresIn: 8640000 });
-                    res.cookie("token", token).status(200).json({ status: "success", user:user.dataValues }); //.cookie("email", email)
+                    res.cookie("token", token).status(200).json({ status: "success", user: user.dataValues }); //.cookie("email", email)
                     return;
                 }
                 console.log(err);
                 return res.status(401).send(" password not match");
             });
         } else {
-            res.status(400).json({response:"email not match"})
+            res.status(400).json({ response: "email not match" })
         }
 
     } catch (error) {
-        res.json({error:error})
+        res.json({ error: error })
     }
 
 }
@@ -134,54 +139,54 @@ export const postLogin = async (req, res) => {
 export const forgetPassword = async (req, res) => {
     try {
         const email = req.body.email
-    const newOTP = GeneratePassword()
-   const update= await UpdateOTP(email, newOTP).then((data) => {
-        return data
-    }).catch((err) => {
-        console.log("err", err);
-    })
-   // console.log(update);
-    
-    if (update==="updated") {
-        SendMail(email, "email verification",newOTP)
-        res.status(200).cookie("email", email).json({response:"verify your email by entering the otp"})
-    } else {
-        res.json({response:"enter a valid email"})
-    }
+        const newOTP = GeneratePassword()
+        const update = await UpdateOTP(email, newOTP).then((data) => {
+            return data
+        }).catch((err) => {
+            console.log("err", err);
+        })
+        // console.log(update);
+
+        if (update === "updated") {
+         await SendMail(email, "email verification", newOTP)
+            res.status(200).cookie("email", email).json({ response: "verify your email by entering the otp" })
+        } else {
+            res.json({ response: "enter a valid email" })
+        }
     } catch (error) {
-        res.json({error:error})
+        res.json({ error: error })
     }
-    
+
 }
 
 // @  resetting password 
 // @ /user/resetPassword
-export const resetPassword=async(req,res)=>{
+export const resetPassword = async (req, res) => {
     try {
-        
-        const saltRounds=10
-        const password=req.body.password
-        const email=req.cookies.email
+
+        const saltRounds = 10
+        const password = req.body.password
+        const email = req.cookies.email
         bcrypt.hash(password, saltRounds, async (err, hash) => {
             if (hash) {
                 console.log(hash);
-                
-                const updatedPassword= await UpdatePassword(email,hash).then((data) => {
+
+                const updatedPassword = await UpdatePassword(email, hash).then((data) => {
                     return data
                 }).catch((err) => {
                     console.log("err", err);
                 })
                 console.log(updatedPassword);
-                
-              return  res.status(200).json({response:updatedPassword})
+
+                return res.status(200).json({ response: updatedPassword })
             }
-            return res.json({response:"reset password failed"})
-            
+            return res.json({ response: "reset password failed" })
+
         })
 
 
     } catch (error) {
-        res.json({error:error})
+        res.json({ error: error })
     }
 }
 

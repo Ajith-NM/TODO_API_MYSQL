@@ -88,7 +88,7 @@ export const GeneratePassword = () => {
 }
 
 //send mail
-export const SendMail = (email, subject, text) => {
+export const SendMail = async (email, subject, text) => {
     let mailTransport = nodemailer.createTransport({
         service: "gmail",
         auth: {
