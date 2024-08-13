@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import { sequelize } from "./config/DB_connection.js";
 import userRouter from "./routes/userRouter.js";
 import taskRouter from "./routes/taskRouter.js";
+import dotenv from "dotenv"
+dotenv.config()
 
 const app = express();
 app.use(cors());
@@ -35,4 +37,4 @@ await sequelize
 app.use("/user", userRouter);
 app.use("/task", taskRouter);
 
-app.listen(4001, () => console.log("server running"));
+app.listen(process.env.port, () => console.log("server running"));
