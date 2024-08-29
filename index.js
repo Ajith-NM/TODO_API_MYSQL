@@ -9,7 +9,7 @@ import dotenv from "dotenv"
 dotenv.config()
 
 const app = express();
-app.use(cors({ origin: '*',credentials: true,}));
+app.use(cors({ origin: 'https://todo-list-frontend-cf3m.onrender.com',credentials: true,}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
