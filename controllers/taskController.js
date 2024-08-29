@@ -84,7 +84,7 @@ export const statusUpdate = async (req, res) => {
       response: response,
     });
   } catch (error) {
-    res.json({ error: error });
+    res.status(401).json({ error: error });
   }
 };
 

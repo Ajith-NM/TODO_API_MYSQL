@@ -54,16 +54,16 @@ export const postSignup = async (req, res) => {
 
           if (user != "failed") {
             await SendMail(email, "email verification", otp);
-            res.status(200).cookie("email", email).json({ user: user });
+            res.status(200).cookie("email", email).json({ status: user });
             return;
           } else {
-            res.status(500).send("failed to create user");
+            res.json({ status:"failed to create user"});
             return;
           }
         }
       });
     } else {
-      res.send("USER already exist");
+      res.json({status:"email already exist"});
       return;
     }
   } catch (error) {
@@ -90,7 +90,7 @@ export const emailValidation = async (req, res) => {
       res.status(200).json({ result: "email verified successfully" });
       return;
     } else {
-      res.status(401).json({ result: "please enter correct otp" });
+      res.json({ result: "please enter correct otp" });
     }
   } catch (error) {
     res.json({ res: error });
@@ -122,10 +122,10 @@ export const postLogin = async (req, res) => {
           return;
         }
         console.log(err);
-        return res.status(401).send(" password not match");
+        return res.json({ status: "password not match" });
       });
     } else {
-      res.status(400).json({ response: "email not match" });
+      res.json({ status: "email not match" });
     }
   } catch (error) {
     res.json({ error: error });
