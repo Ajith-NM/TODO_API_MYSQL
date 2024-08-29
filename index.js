@@ -9,7 +9,11 @@ import dotenv from "dotenv"
 dotenv.config()
 
 const app = express();
-app.use(cors({ origin:'https://todolistfocus.netlify.app'}));
+app.use(cors({
+   origin:'https://todolistfocus.netlify.app',
+   methods: "GET,PUT,POST,DELETE",
+   credentials: true,
+  }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
