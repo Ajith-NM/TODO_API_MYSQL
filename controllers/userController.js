@@ -54,7 +54,7 @@ export const postSignup = async (req, res) => {
 
           if (user != "failed") {
             await SendMail(email, "email verification", otp);
-            res.status(200).cookie("email", email).json({ status: user });
+            res.status(200).cookie("email", email,{secure: true,httpOnly: true}).json({ status: user });
             return;
           } else {
             res.json({ status:"failed to create user"});
