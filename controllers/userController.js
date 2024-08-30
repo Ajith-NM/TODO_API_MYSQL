@@ -14,7 +14,8 @@ import {
 import { response } from "express";
 
 dotenv.config();
-
+const options={sameSite: 'None',
+  secure: true}
 // @ userSignup
 // @ /user/postSignup
 export const postSignup = async (req, res) => {
@@ -54,7 +55,7 @@ export const postSignup = async (req, res) => {
 
           if (user != "failed") {
             await SendMail(email, "email verification", otp);
-            res.status(200).cookie("email", email,{secure: true}).json({ status: user });
+            res.status(200).cookie("email", email,options).json({ status: user });
             return;
           } else {
             res.json({ status:"failed to create user"});
@@ -116,7 +117,7 @@ export const postLogin = async (req, res) => {
             expiresIn: 8640000,
           });
           res
-            .cookie("token", token)
+            .cookie("token", token,options)
             .status(200)
             .json({ status: "success", user: user.dataValues });
           return;
@@ -150,7 +151,7 @@ export const forgetPassword = async (req, res) => {
       await SendMail(email, "email verification", newOTP);
       res
         .status(200)
-        .cookie("email", email)
+        .cookie("email", email,options)
         .json({ response: "verify your email by entering the otp" });
     } else {
       res.json({ response: "enter a valid email" });
