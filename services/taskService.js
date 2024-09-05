@@ -13,6 +13,19 @@ export const GetAllTasks = async (id) => {
   });
 };
 
+//get task
+export const GetTask = async (id) => {
+  return new Promise((resolve, reject) => {
+    Tasks.findOne({ where: { task_Id: id } })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject("failed");
+      });
+  });
+};
+
 //ceate a new task
 export const CreateATask = async (title, desc, status, id) => {
   return new Promise((resolve, reject) => {
@@ -23,10 +36,10 @@ export const CreateATask = async (title, desc, status, id) => {
       user_Id: id,
     })
       .then((data) => {
-        resolve("inserted");
+        resolve(data.dataValues);
       })
-      .catch((err) => {
-        reject("failed");
+      .catch(() => {
+        reject(false);
       });
   });
 };
@@ -40,13 +53,13 @@ export const UpdateTaskStatus = async (status, id, user_Id) => {
     )
       .then((data) => {
         if (data[0]) {
-          resolve("updated");
+          resolve(true);
         } else {
-          resolve("failed");
+          resolve(false);
         }
       })
-      .catch((err) => {
-        reject("failed");
+      .catch(() => {
+        reject(false);
       });
   });
 };
@@ -57,13 +70,13 @@ export const DeleteTask = async (id, user_Id) => {
     Tasks.destroy({ where: { task_Id: id, user_Id: user_Id } })
       .then((data) => {
         if (data) {
-          resolve("deleted");
+          resolve(true);
         } else {
-          resolve("failed");
+          resolve(false);
         }
       })
       .catch((err) => {
-        reject("failed");
+        reject(false);
       });
   });
 };

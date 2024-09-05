@@ -3,6 +3,7 @@ import {
   CreateATask,
   DeleteTask,
   GetAllTasks,
+  GetTask,
   UpdateTaskStatus,
 } from "../services/taskService.js";
 
@@ -10,7 +11,6 @@ import {
 // @ /task/home
 export const getHome = async (req, res) => {
   try {
-    let response;
     const allTasks = await GetAllTasks(req.userId)
       .then((data) => {
         return data;
@@ -20,13 +20,42 @@ export const getHome = async (req, res) => {
       });
 
     if (allTasks.length === 0) {
-      response = "please create a new task";
+      return res
+        .status(400)
+        .json({ status: false, response: "please create a new task" });
     } else {
-      response = allTasks;
+      return res.status(200).json({ status: true, response: allTasks });
     }
-    res.status(200).json({ tasks: response });
   } catch (error) {
-    res.json({ error: error });
+    res.status(400).json({ status: false, msg: "something went wrong" });
+  }
+};
+
+// @  get a task
+// @ /task/
+export const getTask = async (req,res) => {
+  try {
+    const id = req.params.id;
+    console.log(typeof id);
+    
+    const Task = await GetTask(id)
+      .then((data) => {
+        return data;
+      })
+      .catch((err) => {
+        console.log("error=", err);
+      });
+    console.log(Task);
+
+    if (Task) {
+      return res.status(200).json({ status: true, response: Task });
+    } else {
+      return res
+        .status(400)
+        .json({ status: false, response: "please create a new task" });
+    }
+  } catch (error) {
+    res.status(400).json({ status: false, msg: "something went wrong" });
   }
 };
 
@@ -36,7 +65,7 @@ export const postCreate = async (req, res) => {
   try {
     const { title, description } = req.body;
     const userId = req.userId;
-    let response;
+
     const newTask = await CreateATask(title, description, "pending", userId)
       .then((data) => {
         return data;
@@ -45,17 +74,15 @@ export const postCreate = async (req, res) => {
         console.log("error=", err);
       });
 
-    if (newTask === "failed") {
-      response = "failed to create new task";
+    if (newTask) {
+      return res.status(200).json({ status: true, response: newTask });
     } else {
-      response = "new task added";
+      res
+        .status(400)
+        .json({ status: false, response: "failed to create new task" });
     }
-
-    res.status(200).json({
-      response: response,
-    });
   } catch (error) {
-    res.json({ error: error });
+    res.status(400).json({ status: false, response: "something went wrong" });
   }
 };
 
@@ -66,7 +93,6 @@ export const statusUpdate = async (req, res) => {
     const status = req.body.status;
     const id = req.query.id;
     const userId = req.userId;
-    let response;
     const statusUpdate = await UpdateTaskStatus(status, id, userId)
       .then((data) => {
         return data;
@@ -75,16 +101,17 @@ export const statusUpdate = async (req, res) => {
         console.log("error=", err);
       });
 
-    if (statusUpdate == "failed") {
-      response = "failed to update status";
+    if (statusUpdate) {
+      return res
+        .status(200)
+        .json({ status: true, response: "task status updated" });
     } else {
-      response = "task updated";
+      return res
+        .status(400)
+        .json({ status: false, response: "failed to update status" });
     }
-    res.status(200).json({
-      response: response,
-    });
   } catch (error) {
-    res.status(401).json({ error: error });
+    res.status(401).json({ status: false, response: "something went wrong" });
   }
 };
 
@@ -95,7 +122,6 @@ export const deleteATask = async (req, res) => {
     const id = req.query.id;
     const userId = req.userId;
 
-    let response;
     const taskDelete = await DeleteTask(id, userId)
       .then((data) => {
         return data;
@@ -104,15 +130,14 @@ export const deleteATask = async (req, res) => {
         console.log("error=", err);
       });
 
-    if (taskDelete == "failed") {
-      response = "failed to delete task";
+    if (taskDelete) {
+      return res.status(200).json({ status: true, response: "task deleted" });
     } else {
-      response = "task deleted";
+      return res
+        .status(400)
+        .json({ status: false, response: "failed to delete task" });
     }
-    res.status(200).json({
-      response: response,
-    });
   } catch (error) {
-    res.json({ error: error });
+    res.status(401).json({ status: false, response: "something went wrong" });
   }
 };

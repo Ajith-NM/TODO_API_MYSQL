@@ -6,11 +6,19 @@ import { userAuthentication } from "../middlewares/auth.js";
 import {
   deleteATask,
   getHome,
+  getTask,
   postCreate,
   statusUpdate,
 } from "../controllers/taskController.js";
 
 taskRouter.get("/home", userAuthentication, getHome);
+
+taskRouter.get(
+  "/getTask/:id",
+  query("id").not().isEmpty().withMessage("enter  id of the task"),
+  userAuthentication,
+  getTask
+);
 
 taskRouter.post(
   "/create",
