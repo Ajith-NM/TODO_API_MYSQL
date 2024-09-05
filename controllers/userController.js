@@ -13,8 +13,8 @@ import {
 } from "../services/userService.js";
 
 dotenv.config();
-// const options={sameSite: 'None',
-//   secure: true}
+const options={sameSite: 'None',
+  secure: true}
 
 // @ user GoogleAuth Signup
 // @ user/postSignup/Auth
@@ -50,7 +50,7 @@ export const postAuthSignup = async (req, res) => {
         await SendMail(email, "email verification", otp);
         res
           .status(200)
-          .cookie("email", email)
+          .cookie("email", email,options)
           .json({ status: true, msg: "new user created" });
         return;
       } else {
@@ -116,7 +116,7 @@ export const postSignup = async (req, res) => {
             await SendMail(email, "email verification", otp);
             res
               .status(200)
-              .cookie("email", email)
+              .cookie("email", email,options)
               .json({ status: true, msg: "new user created" });
             return;
           } else {
@@ -178,7 +178,7 @@ export const postLogin = async (req, res) => {
         expiresIn: 8640000,
       });
       res
-        .cookie("token", token)
+        .cookie("token", token,options)
         .status(200)
         .json({ status: true, user: user.dataValues });
       return;
@@ -195,7 +195,6 @@ export const postLogin = async (req, res) => {
           .json({ status: false, msg: "password not match" });
       });
     } else if (user) {
-      console.log("hi");
       loginProcess();
       return;
     } else {
@@ -226,7 +225,7 @@ export const forgetPassword = async (req, res) => {
       await SendMail(email, "email verification", newOTP);
       res
         .status(200)
-        .cookie("email", email)
+        .cookie("email", email,options)
         .json({ status: true, msg: "verify your email by entering the otp" });
     } else {
       res.status(400).json({ status: false, msg: "enter a valid email" });
