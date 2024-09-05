@@ -33,11 +33,9 @@ export const getHome = async (req, res) => {
 
 // @  get a task
 // @ /task/
-export const getTask = async (req,res) => {
+export const getTask = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(typeof id);
-    
     const Task = await GetTask(id)
       .then((data) => {
         return data;
@@ -45,7 +43,6 @@ export const getTask = async (req,res) => {
       .catch((err) => {
         console.log("error=", err);
       });
-    console.log(Task);
 
     if (Task) {
       return res.status(200).json({ status: true, response: Task });
