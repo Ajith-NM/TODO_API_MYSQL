@@ -8,7 +8,7 @@ export const Users = sequelize.define("Users", {
     autoIncrement: true,
   },
   name: { type: DataTypes.STRING, allowNull: false },
-  password: { type: DataTypes.STRING, allowNull: false },
+  password: { type: DataTypes.STRING,},
   email: { type: DataTypes.STRING, allowNull: false },
   profilePic: { type: DataTypes.STRING },
   otp: { type: DataTypes.STRING },

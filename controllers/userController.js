@@ -11,20 +11,78 @@ import {
   UpdateOTP,
   UpdatePassword,
 } from "../services/userService.js";
-import { response } from "express";
 
 dotenv.config();
-const options={sameSite: 'None',
-  secure: true}
+// const options={sameSite: 'None',
+//   secure: true}
+
+// @ user GoogleAuth Signup
+// @ user/postSignup/Auth
+export const postAuthSignup = async (req, res) => {
+  try {
+    let { picture, name, email } = req.body;
+    console.log("hii=", req.body);
+
+    let previousUser = await CheckUser(email)
+      .then((data) => {
+        return data;
+      })
+      .catch((err) => {
+        return err;
+      });
+    console.log("prev", previousUser);
+
+    if (previousUser) {
+      res.status(400).json({ status: false, msg: "email already exist" });
+      return;
+    } else {
+      const otp = GeneratePassword();
+      let user = await InsertUser(name, email, picture, otp)
+        .then((data) => {
+          return data;
+        })
+        .catch((err) => {
+          console.log("error=", err);
+          return err;
+        });
+
+      if (user) {
+        await SendMail(email, "email verification", otp);
+        res
+          .status(200)
+          .cookie("email", email)
+          .json({ status: true, msg: "new user created" });
+        return;
+      } else {
+        res.status(400).json({ status: false, msg: "failed to create user" });
+        return;
+      }
+    }
+  } catch (error) {
+    console.log("error=", error);
+    res.status(400).json({ status: false, msg: "something went wrong" });
+  }
+};
+
 // @ userSignup
 // @ /user/postSignup
 export const postSignup = async (req, res) => {
   try {
     const saltRounds = 10;
     let { password, username, email } = req.body;
-    let previousUser = await CheckUser(email);
+    let previousUser = await CheckUser(email)
+      .then((data) => {
+        return data;
+      })
+      .catch((err) => {
+        return err;
+      });
 
-    if (previousUser === null) {
+    if (previousUser) {
+      res.status(400).json({ status: false, msg: "email already exist" });
+      return;
+    } else {
+      //console.log("new user");
       bcrypt.hash(password, saltRounds, async (err, hash) => {
         if (hash) {
           const uploadResult = await cloudinaryUpload.uploader
@@ -41,34 +99,37 @@ export const postSignup = async (req, res) => {
 
           let user = await InsertUser(
             username,
-            hash,
             email,
             uploadResult.secure_url,
-            otp
+            otp,
+            hash
           )
             .then((data) => {
               return data;
             })
             .catch((err) => {
               console.log("error=", err);
+              return err;
             });
 
-          if (user != "failed") {
+          if (user) {
             await SendMail(email, "email verification", otp);
-            res.status(200).cookie("email", email,options).json({ status: user });
+            res
+              .status(200)
+              .cookie("email", email)
+              .json({ status: true, msg: "new user created" });
             return;
           } else {
-            res.json({ status:"failed to create user"});
+            res
+              .status(400)
+              .json({ status: false, msg: "failed to create user" });
             return;
           }
         }
       });
-    } else {
-      res.json({status:"email already exist"});
-      return;
     }
   } catch (error) {
-    res.send("failed");
+    res.status(400).json({ status: false, msg: "something went wrong" });
     console.log("error=", error);
   }
 };
@@ -88,13 +149,15 @@ export const emailValidation = async (req, res) => {
 
     if (enterdOTP === originalOTP) {
       await UpdateOTP(req.cookies.email, null);
-      res.status(200).json({ result: "email verified successfully" });
+      res
+        .status(200)
+        .json({ status: true, msg: "email verified successfully" });
       return;
     } else {
-      res.json({ result: "please enter correct otp" });
+      res.status(401).json({ status: false, msg: "please enter correct otp" });
     }
   } catch (error) {
-    res.json({ res: error });
+    res.status(400).json({ status: false, msg: "something went wrong" });
   }
 };
 
@@ -102,7 +165,7 @@ export const emailValidation = async (req, res) => {
 // @ /user/postLogin
 export const postLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password = 0 } = req.body;
     const user = await CheckUser(email)
       .then((data) => {
         return data;
@@ -110,26 +173,38 @@ export const postLogin = async (req, res) => {
       .catch((err) => {
         console.log("err", err);
       });
-    if (user !== null) {
+    const loginProcess = () => {
+      let token = jwt.sign(user.dataValues, process.env.secret, {
+        expiresIn: 8640000,
+      });
+      res
+        .cookie("token", token)
+        .status(200)
+        .json({ status: true, user: user.dataValues });
+      return;
+    };
+    if (password) {
       bcrypt.compare(password, user.dataValues.password, (err, result) => {
         if (result) {
-          let token = jwt.sign(user.dataValues, process.env.secret, {
-            expiresIn: 8640000,
-          });
-          res
-            .cookie("token", token,options)
-            .status(200)
-            .json({ status: "success", user: user.dataValues });
+          loginProcess();
           return;
         }
         console.log(err);
-        return res.json({ status: "password not match" });
+        return res
+          .status(401)
+          .json({ status: false, msg: "password not match" });
       });
+    } else if (user) {
+      console.log("hi");
+      loginProcess();
+      return;
     } else {
-      res.json({ status: "email not match" });
+      res.status(401).json({ status: false, msg: "email not match" });
     }
   } catch (error) {
-    res.json({ error: error });
+    console.log(error);
+
+    res.status(400).json({ status: false, msg: "something went wrong" });
   }
 };
 
@@ -151,13 +226,13 @@ export const forgetPassword = async (req, res) => {
       await SendMail(email, "email verification", newOTP);
       res
         .status(200)
-        .cookie("email", email,options)
-        .json({ response: "verify your email by entering the otp" });
+        .cookie("email", email)
+        .json({ status: true, msg: "verify your email by entering the otp" });
     } else {
-      res.json({ response: "enter a valid email" });
+      res.status(400).json({ status: false, msg: "enter a valid email" });
     }
   } catch (error) {
-    res.json({ error: error });
+    res.status(400).json({ status: false, msg: "something went wrong" });
   }
 };
 
@@ -178,11 +253,17 @@ export const resetPassword = async (req, res) => {
             console.log("err", err);
           });
 
-        return res.status(200).json({ response: updatedPassword });
+        updatedPassword
+          ? res
+              .status(200)
+              .json({ status: updatedPassword, msg: "password updated" })
+          : "";
       }
-      return res.json({ response: "reset password failed" });
+      return res
+        .status(400)
+        .json({ status: false, msg: "reset password failed" });
     });
   } catch (error) {
-    res.json({ error: error });
+    res.status(400).json({ error: error });
   }
 };

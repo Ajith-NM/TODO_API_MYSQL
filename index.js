@@ -8,9 +8,11 @@ import taskRouter from "./routes/taskRouter.js";
 import dotenv from "dotenv"
 dotenv.config()
 
+//https://todolistfocus.netlify.app
+//http://localhost:5173
 const app = express();
 app.use(cors({
-  origin:'https://todolistfocus.netlify.app',
+  origin:'http://localhost:5173',
   methods: "GET,PUT,POST,DELETE",
   credentials: true,
 }));

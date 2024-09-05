@@ -6,6 +6,7 @@ import { validator } from "../middlewares/validator.js";
 import {
   emailValidation,
   forgetPassword,
+  postAuthSignup,
   postLogin,
   postSignup,
   resetPassword,
@@ -27,6 +28,15 @@ userRouter.post(
   validator,
   postSignup
 );
+// picture, name, email
+userRouter.post(
+  "/postSignup/Auth",
+  body("email").isEmail().withMessage("authentication failed"),
+  body("name").not().isEmpty().withMessage("authentication failed"),
+  body("picture").not().isEmpty().withMessage("authentication failed"),
+  validator,
+  postAuthSignup
+);
 
 userRouter.post(
   "/emailVerification",
@@ -41,6 +51,13 @@ userRouter.post(
   "/postLogin",
   body("email").isEmail().withMessage("enter correct email"),
   body("password").not().isEmpty().withMessage("enter password"),
+  validator,
+  postLogin
+);
+
+userRouter.post(
+  "/postLogin/Auth",
+  body("email").isEmail().withMessage("enter correct email"),
   validator,
   postLogin
 );

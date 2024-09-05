@@ -12,14 +12,14 @@ export const CheckUser = async (email) => {
       .then((data) => {
         resolve(data);
       })
-      .catch((err) => {
+      .catch(() => {
         reject("failed");
       });
   });
 };
 
 // insert a new user
-export const InsertUser = async (name, password, email, url, otp) => {
+export const InsertUser = async (name, email, url, otp ,password,) => {
   return new Promise((resolve, reject) => {
     Users.create({
       name: name,
@@ -28,11 +28,11 @@ export const InsertUser = async (name, password, email, url, otp) => {
       profilePic: url,
       otp: otp,
     })
-      .then((data) => {
-        resolve("inserted");
+      .then(() => {
+        resolve(true);
       })
-      .catch((err) => {
-        reject("failed");
+      .catch(() => {
+        reject(false);
       });
   });
 };
@@ -43,13 +43,13 @@ export const UpdateOTP = async (email, otp) => {
     Users.update({ otp: otp }, { where: { email: email } })
       .then((data) => {
         if (data[0]) {
-          resolve("updated");
+          resolve(true);
         } else {
-          resolve("failed");
+          resolve(false);
         }
       })
       .catch((err) => {
-        reject("failed");
+        reject(false);
       });
   });
 };
@@ -58,11 +58,11 @@ export const UpdateOTP = async (email, otp) => {
 export const UpdatePassword = async (email, password) => {
   return new Promise((resolve, reject) => {
     Users.update({ password: password }, { where: { email: email } })
-      .then((data) => {
-        resolve("updated");
+      .then(() => {
+        resolve(true);
       })
-      .catch((err) => {
-        reject("failed");
+      .catch(() => {
+        reject(false);
       });
   });
 };
