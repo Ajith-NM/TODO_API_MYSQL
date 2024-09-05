@@ -183,7 +183,7 @@ export const postLogin = async (req, res) => {
         .json({ status: true, user: user.dataValues });
       return;
     };
-    if (password) {
+    if (password&&user) {
       bcrypt.compare(password, user.dataValues.password, (err, result) => {
         if (result) {
           loginProcess();
