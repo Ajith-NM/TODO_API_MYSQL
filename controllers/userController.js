@@ -21,7 +21,6 @@ const options={sameSite: 'None',
 export const postAuthSignup = async (req, res) => {
   try {
     let { picture, name, email } = req.body;
-    console.log("hii=", req.body);
 
     let previousUser = await CheckUser(email)
       .then((data) => {
@@ -30,7 +29,6 @@ export const postAuthSignup = async (req, res) => {
       .catch((err) => {
         return err;
       });
-    console.log("prev", previousUser);
 
     if (previousUser) {
       res.status(400).json({ status: false, msg: "email already exist" });
@@ -82,7 +80,6 @@ export const postSignup = async (req, res) => {
       res.status(400).json({ status: false, msg: "email already exist" });
       return;
     } else {
-      //console.log("new user");
       bcrypt.hash(password, saltRounds, async (err, hash) => {
         if (hash) {
           const uploadResult = await cloudinaryUpload.uploader
