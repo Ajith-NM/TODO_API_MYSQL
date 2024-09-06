@@ -175,7 +175,7 @@ export const postLogin = async (req, res) => {
       });
     const loginProcess = () => {
       let token = jwt.sign(user.dataValues, process.env.secret, {
-        expiresIn: 8640000,
+        expiresIn: "1d",
       });
       res
         .cookie("token", token,options)
