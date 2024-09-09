@@ -4,6 +4,7 @@ import multer from "multer";
 import { body } from "express-validator";
 import { validator } from "../middlewares/validator.js";
 import {
+  auth,
   emailValidation,
   forgetPassword,
   postAuthSignup,
@@ -11,6 +12,7 @@ import {
   postSignup,
   resetPassword,
 } from "../controllers/userController.js";
+import { userAuthentication } from "../middlewares/auth.js";
 
 const storage = multer.diskStorage({
   filename: function (req, file, cb) {
@@ -18,6 +20,13 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
+
+userRouter.get(
+  "/Authentication",
+  userAuthentication,
+  auth
+);
+
 
 userRouter.post(
   "/postSignup",

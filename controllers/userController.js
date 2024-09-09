@@ -263,3 +263,10 @@ export const resetPassword = async (req, res) => {
     res.status(400).json({ error: error });
   }
 };
+
+// @  checking the user is already logged or not
+// @ /user/Authentication
+export const auth=async(req,res)=>{
+ res.status(200).json({status:true,msg:"alredy logged"});
+
+}
