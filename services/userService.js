@@ -95,11 +95,11 @@ export const SendMail = async (email, subject, text) => {
     text: text,
   };
 
-  mailTransport.sendMail(mailDetails, function (err, data) {
-    if (err) {
-      console.log("Error Occurs");
-    } else {
-      console.log("Email sent successfully");
-    }
-  });
+  // mailTransport.sendMail(mailDetails, function (err, data) {
+  //   if (err) {
+  //     console.log("Error Occurs");
+  //   } else {
+  //     console.log("Email sent successfully");
+  //   }
+  // });
 };

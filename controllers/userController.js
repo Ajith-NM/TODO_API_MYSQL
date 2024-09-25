@@ -45,6 +45,7 @@ export const postAuthSignup = async (req, res) => {
         });
 
       if (user) {
+        console.log("user");
         await SendMail(email, "email verification", otp);
         res
           .status(200)
