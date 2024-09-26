@@ -45,7 +45,6 @@ export const postAuthSignup = async (req, res) => {
         });
 
       if (user) {
-        console.log("user");
         await SendMail(email, "email verification", otp);
         res
           .status(200)
@@ -94,7 +93,6 @@ export const postSignup = async (req, res) => {
               console.log(error);
             });
           let otp = GeneratePassword();
-
           let user = await InsertUser(
             username,
             email,
@@ -128,7 +126,6 @@ export const postSignup = async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ status: false, msg: "something went wrong" });
-    console.log("error=", error);
   }
 };
 
@@ -196,7 +193,7 @@ export const postLogin = async (req, res) => {
       loginProcess();
       return;
     } else {
-      res.status(401).json({ status: false, msg: "email not match" });
+    return  res.status(401).json({ status: false, msg: "email not match" });
     }
   } catch (error) {
     console.log(error);
@@ -219,7 +216,7 @@ export const forgetPassword = async (req, res) => {
         console.log("err", err);
       });
 
-    if (update === "updated") {
+    if (update) {
       await SendMail(email, "email verification", newOTP);
       res
         .status(200)
@@ -240,7 +237,7 @@ export const resetPassword = async (req, res) => {
     const saltRounds = 10;
     const password = req.body.password;
     const email = req.cookies.email;
-    bcrypt.hash(password, saltRounds, async (err, hash) => {
+    bcrypt.hash (password, saltRounds, async (err, hash) => {
       if (hash) {
         const updatedPassword = await UpdatePassword(email, hash)
           .then((data) => {
@@ -248,13 +245,8 @@ export const resetPassword = async (req, res) => {
           })
           .catch((err) => {
             console.log("err", err);
-          });
-
-        updatedPassword
-          ? res
-              .status(200)
-              .json({ status: updatedPassword, msg: "password updated" })
-          : "";
+          })
+        updatedPassword? res.status(200).json({ status: updatedPassword, msg: "password updated" }): "";
       }
       return res
         .status(400)

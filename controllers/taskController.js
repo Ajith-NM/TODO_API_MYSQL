@@ -32,7 +32,7 @@ export const getHome = async (req, res) => {
 };
 
 // @  get a task
-// @ /task/
+// @ /task/getTask/:id
 export const getTask = async (req, res) => {
   try {
     const id = req.params.id;
@@ -83,7 +83,7 @@ export const postCreate = async (req, res) => {
   }
 };
 
-// @  gupdate status of the task
+// @  update status of the task
 // @ /task/statusUpdate
 export const statusUpdate = async (req, res) => {
   try {

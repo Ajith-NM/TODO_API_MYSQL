@@ -10,8 +10,8 @@ dotenv.config()
 
 //https://todolistfocus.netlify.app
 //http://localhost:5173
-const app = express();
-app.use(cors({
+ export const app = express();
+ app.use(cors({
   origin:'https://todolistfocus.netlify.app',
   methods: "GET,PUT,POST,DELETE",
   credentials: true,
