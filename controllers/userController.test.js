@@ -7,11 +7,11 @@ import {
   forgetPassword,
   resetPassword,
   postLogin,
-} from "./userController";
-import * as service from "../services/userService";
+} from "./userController.js";
+import * as service from "../services/userService.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { cloudinaryUpload } from "../config/cloudinary";
+import { cloudinaryUpload } from "../config/cloudinary.js";
 
 describe("testing userController.js", () => {
   beforeEach(() => {
