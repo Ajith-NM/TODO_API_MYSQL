@@ -23,7 +23,7 @@ describe("Testing task controller.js", () => {
     },
   ];
 
-  test("@ /task/home - get all tasks -failed case 1", async () => {
+  test("@ /task/home - get all tasks -failed case ", async () => {
     const req = {
       userId: 1,
     };
@@ -43,7 +43,7 @@ describe("Testing task controller.js", () => {
     });
   });
 
-  test("@ /task/home - get all tasks -failed case 2", async () => {
+  test("@ /task/home - get all tasks -success case", async () => {
     const req = {
       userId: 1,
     };
